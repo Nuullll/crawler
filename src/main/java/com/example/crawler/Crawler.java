@@ -1,7 +1,9 @@
 package com.example.crawler;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.jsoup.nodes.*;
 import org.jsoup.*;
@@ -19,9 +21,18 @@ public class Crawler {
     private static final String NEWS_URL = "http://news.ifeng.com/listpage/11502/0/1/rtlist.shtml";
     private static final String FORMAT = "%s %s %s \n";
     private static final String YEAR = "2016";
+    // MySQL : database java
+    private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
     public static void main(String[] args) {
         try {
+            // Connect to mysql.
+            Connection conn = null;
+            Class.forName("com.mysql.jdbc.Driver");
+            conn = DriverManager.getConnection(SQL_URL, "crawler", "crawler");
+            PreparedStatement ps = null;
+            String sql = "insert into news_list (title,time_stamp,url) values(?,?,?)";
+
             // Get html document.
             Document doc = Jsoup.connect(NEWS_URL).get();
             // Extract the news list.
@@ -34,13 +45,20 @@ public class Crawler {
                 String url = link.attr("href");
                 String title = link.text();
 
+                // Convert time stamp to Date type.
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-                Date timeStamp = formatter.parse(YEAR + "/" + time);
+                java.util.Date timeStamp = formatter.parse(YEAR + "/" + time);
 
+                // Prepare statement for sql.
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, title);
+                ps.setTimestamp(2, new java.sql.Timestamp(timeStamp.getTime()));
+                ps.setString(3, url);
+                ps.executeUpdate();
                 System.out.printf(FORMAT, title, timeStamp.toString(), url);
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
             System.exit(1);
         }
     }
