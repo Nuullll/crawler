@@ -24,42 +24,33 @@ public class Crawler {
     // MySQL : database java
     private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
-    public static void main(String[] args) {
-        try {
-            // Connect to mysql.
-            Connection conn = null;
-            Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(SQL_URL, "crawler", "crawler");
-            PreparedStatement ps = null;
-            String sql = "insert ignore into news_list (title,time_stamp,url) values(?,?,?)";
+    public static void update(Connection conn) throws Exception {
+        PreparedStatement ps = null;
+        String sql = "insert ignore into news_list (title,time_stamp,url) values(?,?,?)";
 
-            // Get html document.
-            Document doc = Jsoup.connect(NEWS_URL).get();
-            // Extract the news list.
-            Elements newsList = doc.select("div.newsList").first().select("li");
+        // Get html document.
+        Document doc = Jsoup.connect(NEWS_URL).get();
+        // Extract the news list.
+        Elements newsList = doc.select("div.newsList").first().select("li");
 
-            for (Element news : newsList) {
-                // Parse the news.
-                String time = news.select("h4").first().text();
-                Element link = news.select("a").first();
-                String url = link.attr("href");
-                String title = link.text();
+        for (Element news : newsList) {
+            // Parse the news.
+            String time = news.select("h4").first().text();
+            Element link = news.select("a").first();
+            String url = link.attr("href");
+            String title = link.text();
 
-                // Convert time stamp to Date type.
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-                java.util.Date timeStamp = formatter.parse(YEAR + "/" + time);
+            // Convert time stamp to Date type.
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+            java.util.Date timeStamp = formatter.parse(YEAR + "/" + time);
 
-                // Prepare statement for sql.
-                ps = conn.prepareStatement(sql);
-                ps.setString(1, title);
-                ps.setTimestamp(2, new java.sql.Timestamp(timeStamp.getTime()));
-                ps.setString(3, url);
-                ps.executeUpdate();
-                System.out.printf(FORMAT, title, timeStamp.toString(), url);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.exit(1);
+            // Prepare statement for sql.
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, title);
+            ps.setTimestamp(2, new java.sql.Timestamp(timeStamp.getTime()));
+            ps.setString(3, url);
+            ps.executeUpdate();
+            System.out.printf(FORMAT, title, timeStamp.toString(), url);
         }
     }
 }
