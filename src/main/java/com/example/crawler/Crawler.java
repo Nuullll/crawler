@@ -31,7 +31,7 @@ public class Crawler {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(SQL_URL, "crawler", "crawler");
             PreparedStatement ps = null;
-            String sql = "insert into news_list (title,time_stamp,url) values(?,?,?)";
+            String sql = "insert ignore into news_list (title,time_stamp,url) values(?,?,?)";
 
             // Get html document.
             Document doc = Jsoup.connect(NEWS_URL).get();
