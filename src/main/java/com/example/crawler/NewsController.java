@@ -45,7 +45,7 @@ public class NewsController {
 
             // View database.
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("SELECT * FROM news_list");
+            stmt.executeQuery("SELECT * FROM news_list ORDER BY time_stamp DESC");
             ResultSet newsList = stmt.getResultSet();
             while (newsList.next()) {
                 String title = newsList.getString("title");
