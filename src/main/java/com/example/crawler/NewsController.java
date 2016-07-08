@@ -16,9 +16,10 @@ public class NewsController {
     private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
     @RequestMapping("/news")
-    public String news(@RequestParam(value = "clear", defaultValue = "false") String clear,
+    public String news(@RequestParam(value = "clear", defaultValue = "false") boolean clear,
                        @RequestParam(value = "user", defaultValue = "") String user,
-                       @RequestParam(value = "password", defaultValue = "") String password) {
+                       @RequestParam(value = "password", defaultValue = "") String password,
+                       @RequestParam(value = "update", defaultValue = "false") boolean update) {
 
         StringBuilder html = new StringBuilder("<h2>新闻列表</h2><ul>");
 
@@ -30,15 +31,17 @@ public class NewsController {
             PreparedStatement ps = null;
 
             // Clear news_list?
-            if (clear.equals("true") && user.equals("crawler") && password.equals("crawler")) {
+            if (clear && user.equals("crawler") && password.equals("crawler")) {
                 String sql = "truncate table news_list";
                 ps = conn.prepareStatement(sql);
                 ps.executeUpdate();
                 return "数据库已清空！";
             }
 
-            // Otherwise, update the news list.
-            Crawler.update(conn);
+            if (update) {
+                // Update the news list.
+                Crawler.update(conn);
+            }
 
             // View database.
             Statement stmt = conn.createStatement();
