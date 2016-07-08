@@ -12,7 +12,7 @@ import java.sql.*;
 @RestController
 public class NewsController {
 
-    private static final String FORMAT = "<li><h4>%s</h4><a href=%s target=_blank>%s</a></li>";
+    private static final String FORMAT = "<li><h4>%s</h4><a href=\"%s\" target=\"_blank\">%s</a></li>";
     private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
     @RequestMapping("/news")
