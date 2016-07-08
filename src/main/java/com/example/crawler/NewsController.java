@@ -16,7 +16,7 @@ public class NewsController {
     private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
     @RequestMapping("/news")
-    public String news(@RequestParam(value = "clear", defaultValue = "false") boolean clear,
+    public String news(@RequestParam(value = "clear", defaultValue = "false") String clear,
                        @RequestParam(value = "user", defaultValue = "") String user,
                        @RequestParam(value = "password", defaultValue = "") String password) {
 
@@ -30,7 +30,7 @@ public class NewsController {
             PreparedStatement ps = null;
 
             // Clear news_list?
-            if (clear && user == "crawler" && password == "crawler") {
+            if (clear.equals("true") && user.equals("crawler") && password.equals("crawler")) {
                 String sql = "truncate table news_list";
                 ps = conn.prepareStatement(sql);
                 ps.executeUpdate();
