@@ -1,7 +1,6 @@
 package com.example.crawler;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 
@@ -21,8 +20,6 @@ public class Crawler {
     private static final String NEWS_URL = "http://news.ifeng.com/listpage/11502/0/1/rtlist.shtml";
     private static final String FORMAT = "%s %s %s \n";
     private static final String YEAR = "2016";
-    // MySQL : database java
-    private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
 
     public static void update(Connection conn) throws Exception {
         PreparedStatement ps = null;
@@ -50,7 +47,7 @@ public class Crawler {
             ps.setTimestamp(2, new java.sql.Timestamp(timeStamp.getTime()));
             ps.setString(3, url);
             ps.executeUpdate();
-            System.out.printf(FORMAT, title, timeStamp.toString(), url);
+//            System.out.printf(FORMAT, title, timeStamp.toString(), url);
         }
     }
 }

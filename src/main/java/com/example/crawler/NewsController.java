@@ -12,8 +12,10 @@ import java.sql.*;
 @RestController
 public class NewsController {
 
-    private static final String FORMAT = "<li><h4>%s</h4><a href=\"%s\" target=\"_blank\">%s</a></li>";
-    private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?useUnicode=true&characterEncoding=UTF8";
+    private static final String FORMAT = "<li><h4>%s</h4>" +    // <h4>TimeStamp</h4>
+            "<a href=\"%s\" target=\"_blank\">%s</a></li>";
+    private static final String SQL_URL = "jdbc:mysql://localhost:3306/java?" +     // Database: java
+            "useUnicode=true&characterEncoding=UTF8";   // Support Chinese characters.
 
     @RequestMapping("/news")
     public String news(@RequestParam(value = "clear", defaultValue = "false") boolean clear,
@@ -25,16 +27,16 @@ public class NewsController {
 
         try {
             // Connect to mysql.
-            Connection conn = null;
+            // @user: crawler
+            // @password: crawler
+            Connection conn = DriverManager.getConnection(SQL_URL, "crawler", "crawler");
             Class.forName("com.mysql.jdbc.Driver");
-            conn = DriverManager.getConnection(SQL_URL, "crawler", "crawler");
-            PreparedStatement ps = null;
+            Statement stmt = conn.createStatement();
 
             // Clear news_list?
             if (clear && user.equals("crawler") && password.equals("crawler")) {
-                String sql = "truncate table news_list";
-                ps = conn.prepareStatement(sql);
-                ps.executeUpdate();
+                String sql = "TRUNCATE TABLE news_list";    // MySQL: Clear the news list.
+                stmt.executeQuery(sql);
                 return "数据库已清空！";
             }
 
@@ -44,7 +46,6 @@ public class NewsController {
             }
 
             // View database.
-            Statement stmt = conn.createStatement();
             stmt.executeQuery("SELECT * FROM news_list ORDER BY time_stamp DESC");
             ResultSet newsList = stmt.getResultSet();
             while (newsList.next()) {
@@ -58,6 +59,5 @@ public class NewsController {
         } catch (Exception e) {
             return e.getMessage();
         }
-
     }
 }
